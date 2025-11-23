@@ -216,18 +216,50 @@ The `ScrapeResult` object provides easy access to scraping results:
 ```python
 result = client.scrape("https://example.com")
 
-# Properties
-result.id          # Job ID
-result.status      # ScrapeStatus enum
-result.url         # Scraped URL
-result.markdown    # Markdown content
-result.html        # Raw HTML (if requested)
-result.metadata    # Additional metadata
+# Core Properties
+result.id           # Job ID
+result.status       # ScrapeStatus enum (pending, processing, completed, failed)
+result.url          # Original URL that was scraped
+result.final_url    # Final URL after redirects
 
-# Helper methods
-result.is_completed  # True if completed
-result.is_failed     # True if failed
+# Content
+result.markdown     # Markdown-converted content
+result.html         # Raw HTML (if requested with return_html=True)
+result.screenshot   # Screenshot data/URL (if available)
+
+# Response Details
+result.status_code  # HTTP status code (e.g., 200, 404)
+result.headers      # HTTP response headers dict
+result.credits      # Credits consumed for this request
+result.attempts     # Number of retry attempts made
+
+# Additional Data
+result.metadata     # Additional response metadata
+result.error        # Error message (if failed)
+
+# Helper Properties
+result.is_completed  # True if scraping completed
+result.is_failed     # True if scraping failed
 result.is_pending    # True if still processing
+result.success       # True if completed with 2xx status code
+```
+
+### Accessing Response Data
+
+```python
+result = client.scrape("https://example.com")
+
+# Check if successful
+if result.success:
+    print(f"Successfully scraped {result.final_url}")
+    print(f"Status: {result.status_code}")
+    print(f"Credits used: {result.credits}")
+    print(f"Content length: {len(result.markdown)}")
+
+# Access headers
+if result.headers:
+    content_type = result.headers.get("content-type")
+    print(f"Content-Type: {content_type}")
 ```
 
 ## Error Handling

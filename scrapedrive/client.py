@@ -183,7 +183,8 @@ class ScrapeDrive:
             status = result.get("status")
 
             if status == "completed":
-                html_body = result.get("response", {}).get("body", "")
+                response_data = result.get("response", {})
+                html_body = response_data.get("body", "")
                 markdown = None
 
                 if return_markdown and html_body:
@@ -194,10 +195,16 @@ class ScrapeDrive:
                 return ScrapeResult(
                     id=job_id,
                     status=ScrapeStatus.COMPLETED,
-                    url=url,
+                    url=result.get("url", url),
                     html=html_body if return_html else None,
                     markdown=markdown,
-                    metadata=result.get("response", {}),
+                    final_url=response_data.get("final_url"),
+                    status_code=response_data.get("status_code"),
+                    headers=response_data.get("headers"),
+                    credits=response_data.get("credits"),
+                    attempts=result.get("attempts"),
+                    screenshot=response_data.get("screenshot"),
+                    metadata=response_data,
                 )
 
             elif status == "failed":
@@ -225,12 +232,19 @@ class ScrapeDrive:
         result = self._handle_response(response)
 
         status = result.get("status", "pending")
-        html_body = result.get("response", {}).get("body", "")
+        response_data = result.get("response", {})
+        html_body = response_data.get("body", "")
 
         return ScrapeResult(
             id=job_id,
             status=ScrapeStatus(status),
             url=result.get("url", ""),
             html=html_body if html_body else None,
-            metadata=result.get("response", {}),
+            final_url=response_data.get("final_url"),
+            status_code=response_data.get("status_code"),
+            headers=response_data.get("headers"),
+            credits=response_data.get("credits"),
+            attempts=result.get("attempts"),
+            screenshot=response_data.get("screenshot"),
+            metadata=response_data,
         )

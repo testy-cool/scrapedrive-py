@@ -10,8 +10,8 @@ with ScrapeDrive(api_key="your-api-key") as client:
     print(f"Content length: {len(result.markdown)} characters")
     print(result.markdown[:200] + "...")
 
-# Example 2: Custom configuration
-print("\nExample 2: Custom configuration")
+# Example 2: Custom configuration and accessing response details
+print("\nExample 2: Custom configuration and response details")
 with ScrapeDrive() as client:  # Uses SCRAPEDRIVE_API_KEY env var
     result = client.scrape(
         "https://news.ycombinator.com",
@@ -20,8 +20,16 @@ with ScrapeDrive() as client:  # Uses SCRAPEDRIVE_API_KEY env var
         return_html=True,
     )
     print(f"Status: {result.status}")
+    print(f"HTTP Status Code: {result.status_code}")
+    print(f"Final URL: {result.final_url}")
+    print(f"Credits used: {result.credits}")
+    print(f"Attempts: {result.attempts}")
     print(f"Has HTML: {result.html is not None}")
     print(f"Has Markdown: {result.markdown is not None}")
+
+    # Access headers
+    if result.headers:
+        print(f"Content-Type: {result.headers.get('content-type', 'N/A')}")
 
 # Example 3: Non-blocking scraping
 print("\nExample 3: Non-blocking scraping")
